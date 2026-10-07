@@ -16,7 +16,7 @@ Built for **The Infinity Hack '26** — AI Project Manager challenge.
 
 - **Team name:** NovaWorks Builders
 - **Members:**
-  - **Ghusharib Najam** — Frontend / UI — Next.js pages, Tailwind + shadcn/ui components, framer-motion animations, light/dark theme
+  - **Ghusharib Najam** — Frontend / UI — Next.js pages, Tailwind + shadcn/ui components, framer-motion animations, light/dark theming (next-themes), Geist font setup, responsive polish
   - **Meesum Zaheer** — Backend / AI — Prisma schema, SQLite/PostgreSQL, JWT auth, access control, Gemini integration, validation, transactional saves
 - **Repository:** `https://github.com/ghusharibdev/innovators.git`
 
@@ -56,7 +56,8 @@ Built for **The Infinity Hack '26** — AI Project Manager challenge.
 | **AI** | Google Gemini — `gemini-3.1-flash-lite` with forced JSON response schema |
 | **Authentication** | JWT (`jose`, HS256) in an httpOnly cookie + bcryptjs password hashing |
 | **Validation** | Zod (shape) + custom semantic validator (user codes, roles, deadline rules) |
-| **Theme** | Light / Dark / System toggle via next-themes |
+| **Theme** | Light / Dark / System toggle via next-themes (persisted, no FOUC) |
+| **Fonts** | Geist Sans (UI) + JetBrains Mono (codes, hours, transcript) |
 
 ---
 
@@ -258,7 +259,7 @@ Browser
 | File | Responsibility |
 |---|---|
 | `lib/access.ts` | `getVisibleProjects`, `getProjectForUser`, `getTasksForAgent` — single source of truth for permissions |
-| `lib/ai.ts` | Gemini REST call, system prompt, JSON response schema, timeout + retry |
+| `lib/ai.ts` | Gemini REST call (`gemini-3.1-flash-lite`), system prompt, JSON response schema, 12 s timeout + single retry |
 | `lib/validate.ts` | Zod shape validation + semantic validation (user codes, roles, deadline rules) |
 | `app/api/transcript/route.ts` | Admin-only orchestration: extract → validate → transactional save |
 | `lib/auth.ts` | JWT create/verify, `requireUser`, `requireAdmin` |
@@ -324,4 +325,4 @@ No cross-origin configuration is needed — frontend and API share one origin.
 - Agent "My Tasks" view across projects
 - Read-only team directory
 - Persistent SQLite / PostgreSQL storage
-- Modern, animated, minimal UI with light/dark theme
+- Modern, animated, minimal UI with light/dark theme (Geist Sans, semantic color tokens, hover micro-interactions, fully responsive mobile → desktop)
