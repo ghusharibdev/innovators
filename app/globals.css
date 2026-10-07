@@ -1,0 +1,266 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─────────────────────────────────────────────────────────────
+   Dual-theme tokens — light is the :root default, dark under .dark.
+   All values are HSL triplets (no hsl() wrapper) so Tailwind's
+   hsl(var(--token)) pattern keeps working.
+   ───────────────────────────────────────────────────────────── */
+@layer base {
+  :root {
+    /* LIGHT THEME — high contrast, warm neutral, no pure white */
+    --background: 220 20% 98%;
+    --foreground: 222 47% 11%;
+
+    --surface: 0 0% 100%;
+    --surface-2: 220 20% 96%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --muted: 220 14% 94%;
+    --muted-foreground: 220 9% 40%;
+
+    --border: 220 13% 88%;
+    --input: 220 13% 88%;
+    --ring: 258 90% 55%;
+
+    --primary: 258 90% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 190 90% 42%;
+    --secondary-foreground: 0 0% 100%;
+
+    --accent: 258 90% 55%;
+    --accent-2: 190 90% 42%;
+    --accent-foreground: 0 0% 100%;
+
+    --success: 152 62% 32%;
+    --success-foreground: 0 0% 100%;
+
+    --warn: 32 90% 40%;
+    --warn-foreground: 0 0% 100%;
+
+    --danger: 0 72% 45%;
+    --danger-foreground: 0 0% 100%;
+
+    /* Aliases kept for existing shadcn-style consumers */
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --gradient-from: 258 90% 55%;
+    --gradient-to: 190 90% 42%;
+
+    --shadow-color: 222 47% 11%;
+    --radius: 14px;
+
+    color-scheme: light;
+  }
+
+  .dark {
+    --background: 222 22% 7%;
+    --foreground: 210 20% 96%;
+
+    --surface: 222 20% 11%;
+    --surface-2: 222 18% 15%;
+
+    --card: 222 20% 11%;
+    --card-foreground: 210 20% 96%;
+
+    --popover: 222 22% 9%;
+    --popover-foreground: 210 20% 96%;
+
+    --muted: 222 16% 18%;
+    --muted-foreground: 215 14% 65%;
+
+    --border: 222 16% 22%;
+    --input: 222 16% 22%;
+    --ring: 258 90% 66%;
+
+    --primary: 258 90% 66%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 190 90% 55%;
+    --secondary-foreground: 222 22% 7%;
+
+    --accent: 258 90% 66%;
+    --accent-2: 190 90% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --success: 152 62% 45%;
+    --success-foreground: 222 22% 7%;
+
+    --warn: 38 92% 55%;
+    --warn-foreground: 222 22% 7%;
+
+    --danger: 0 78% 60%;
+    --danger-foreground: 0 0% 100%;
+
+    --destructive: 0 78% 60%;
+    --destructive-foreground: 210 20% 98%;
+
+    --gradient-from: 258 90% 66%;
+    --gradient-to: 190 90% 55%;
+
+    --shadow-color: 0 0% 0%;
+
+    color-scheme: dark;
+  }
+
+  * {
+    @apply border-border;
+    border-color: hsl(var(--border));
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    background-image: radial-gradient(
+        60rem 40rem at 15% -10%,
+        hsl(var(--gradient-from) / 0.08),
+        transparent 60%
+      ),
+      radial-gradient(
+        50rem 32rem at 100% 0%,
+        hsl(var(--gradient-to) / 0.06),
+        transparent 55%
+      );
+    background-attachment: fixed;
+  }
+
+  .dark body {
+    background-image: radial-gradient(
+        60rem 40rem at 15% -10%,
+        hsl(var(--gradient-from) / 0.14),
+        transparent 60%
+      ),
+      radial-gradient(
+        50rem 32rem at 100% 0%,
+        hsl(var(--gradient-to) / 0.1),
+        transparent 55%
+      );
+  }
+
+  /* Visible focus ring on every interactive element */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.25);
+    color: hsl(var(--foreground));
+  }
+
+  /* Scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+    border-radius: 9999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground) / 0.5);
+    background-clip: content-box;
+  }
+}
+
+@layer components {
+  .accent-gradient-text {
+    @apply bg-accent-gradient bg-clip-text text-transparent;
+  }
+
+  .hairline {
+    @apply border-border;
+  }
+
+  /* Shimmer skeleton */
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--muted-foreground) / 0.08),
+      transparent
+    );
+    animation: shimmer 1.4s infinite;
+  }
+}
+
+@layer utilities {
+  .glass {
+    background-color: hsl(var(--card) / 0.65);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid hsl(var(--border));
+  }
+  .glass-strong {
+    background-color: hsl(var(--card) / 0.85);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid hsl(var(--border));
+  }
+  .hover-lift {
+    transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 180ms ease, box-shadow 180ms ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-3px);
+    border-color: hsl(var(--accent) / 0.4);
+    box-shadow: 0 12px 32px -16px hsl(var(--shadow-color) / 0.35);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hover-lift:hover {
+      transform: none;
+    }
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
