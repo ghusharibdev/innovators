@@ -54,9 +54,7 @@ const NAV_ITEMS: NavItem[] = [
 
 function BrandMark() {
   return (
-    <span className="grid size-9 place-items-center rounded-xl bg-accent-gradient text-sm font-bold text-primary-foreground">
-      NW
-    </span>
+    <img src="/logo.svg" alt="NovaWorks logo" className="size-9 rounded-xl" />
   );
 }
 

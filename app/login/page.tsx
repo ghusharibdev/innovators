@@ -87,9 +87,7 @@ function LoginCard() {
 
         <div className="relative z-10 flex h-full flex-col justify-between p-12">
           <div className="flex items-center gap-3">
-            <span className="grid size-10 place-items-center rounded-xl bg-accent-gradient text-sm font-bold text-primary-foreground">
-              NW
-            </span>
+            <img src="/logo.svg" alt="NovaWorks logo" className="size-10 rounded-xl" />
             <span className="text-sm font-semibold tracking-tight">
               {process.env.NEXT_PUBLIC_APP_NAME ?? "NovaWorks CRM"}
             </span>
