@@ -271,29 +271,74 @@ Permissions are enforced inside `lib/access.ts` and every API route — hiding a
 
 ## Deployment Details
 
-- **Deployment status:** Local only (SQLite); Postgres config-ready for a live link
-- **Database:** SQLite at `prisma/dev.db` locally; Neon / Aiven PostgreSQL free tier when deployed
-- **Deployed branch / commit:** `main @ 733a467`
+- Deployment status: Live on Vercel (frontend + API) with a Neon PostgreSQL database.
+- Frontend host: Vercel — Next.js 15 App Router, serverless functions.
+- Backend host: Vercel serverless functions (same project, single origin).
+- Database: Neon — serverless PostgreSQL, free tier.
+- Deployed branch: main.
 
 ### How we deployed
 
-1. Provisioned a free PostgreSQL database on Neon (or Aiven). Copied the pooled connection string.
-2. Changed `prisma/schema.prisma` provider from `sqlite` to `postgresql`.
-3. Applied the schema to the hosted database:
+1. Provision PostgreSQL on Neon
+   - Created a free project at https://neon.tech.
+   - Copied both connection strings from the dashboard:
+     - Pooled (has -pooler in the hostname) → set as DATABASE_URL.
+     - Direct (no -pooler) → set as DIRECT_URL.
 
-```bash
-DATABASE_URL="<postgres url>" npx prisma migrate deploy
-DATABASE_URL="<postgres url>" npm run db:seed
-```
+2. Schema provider
+   - prisma/schema.prisma uses provider = "postgresql" with both url and
+     directUrl set. Migrations run against DIRECT_URL; the app runtime uses the
+     pooled DATABASE_URL.
 
-4. Imported the repository into Vercel (framework preset: Next.js, no custom build command).
-5. Added environment variables in Vercel: `DATABASE_URL`, `SESSION_SECRET`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `NEXT_PUBLIC_APP_NAME`.
-6. Deployed. Vercel runs `prisma generate && next build` automatically.
-7. Verified the live URL by logging in as admin, running the transcript flow once, then logging in as a manager and an agent to confirm scoping.
+3. Build script
+   - package.json includes "vercel-build": "prisma generate && prisma migrate deploy && next build".
+   - "postinstall": "prisma generate" ensures the client is always generated.
+   - On every deploy, Vercel applies new migrations automatically before building.
 
-No cross-origin configuration is needed — frontend and API share one origin.
+4. Import into Vercel
+   - Imported the GitHub repository into Vercel.
+   - Framework preset: Next.js (no custom build command needed — vercel-build is picked up automatically).
+   - Added these environment variables in Settings → Environment Variables:
+     - DATABASE_URL — Neon pooled connection string
+     - DIRECT_URL — Neon direct connection string
+     - SESSION_SECRET — 64-character hex secret
+     - GEMINI_API_KEY — Google AI Studio key
+     - GEMINI_MODEL — gemini-3.1-flash-lite
+     - NEXT_PUBLIC_APP_NAME — NovaWorks CRM
 
-> ⚠️ SQLite does not persist on serverless platforms. A hosted PostgreSQL database is required for a working live link.
+5. Deploy
+   - Clicked Deploy. Vercel ran prisma generate, then prisma migrate deploy
+     (created all tables), then next build. First deploy took about 2 minutes.
+
+6. Seed the production database
+   - From the local repository, ran the seed against the production database using
+     the same Neon URL:
+     DATABASE_URL="<neon pooled url>" DIRECT_URL="<neon direct url>" npm run db:seed
+   - Alternatively, while logged in as admin on the live site, POST /api/seed
+     can be used for the first-run bootstrap (it is admin-only once users exist).
+
+7. Verification
+   - Opened the live Vercel URL.
+   - Logged in as admin@novaworks.example / Demo123!.
+   - Ran Create from Transcript → confirmed 3 projects / 12 tasks / 124 hours.
+   - Logged in as a manager and an agent to confirm role scoping.
+   - Refreshed the dashboard to confirm PostgreSQL persistence.
+
+### Environment matrix
+
+Environment         Provider   DATABASE_URL          DIRECT_URL
+Local development   SQLite     file:./dev.db         file:./dev.db
+Production (Vercel) Neon       pooled Postgres URL   direct Postgres URL
+
+### Notes
+
+- SQLite is not supported on Vercel or any serverless host (ephemeral filesystem).
+  Neon PostgreSQL is required for a working live link.
+- The local SQLite setup is fully preserved: to run locally, set DATABASE_URL="file:./dev.db"
+  and DIRECT_URL="file:./dev.db" in .env, then run
+  npx prisma db push && npm run db:seed && npm run dev.
+  The old SQLite migration is intentionally removed — for local SQLite development,
+  use npx prisma db push to sync the schema instead of migrations.
 
 ---
 

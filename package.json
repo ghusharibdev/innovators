@@ -5,7 +5,9 @@
   "description": "NovaWorks CRM — AI Meeting-to-Project Manager (The Infinity Hack '26)",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build",
+    "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next lint",
     "db:seed": "tsx prisma/seed.ts",

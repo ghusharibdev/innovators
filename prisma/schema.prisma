@@ -1,13 +1,16 @@
 // NovaWorks CRM data model — DESIGN.md §5
-// ⚠️ change provider to "postgresql" when deploying (SQLite does not persist on serverless).
+// PostgreSQL (Neon). Runtime uses the pooled DATABASE_URL; migrations use the
+// direct DIRECT_URL. For local SQLite, switch provider back to "sqlite", drop
+// directUrl, and use npx prisma db push (SQLite does not persist on serverless).
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum Role {
@@ -62,4 +65,3 @@ model Task {
   @@index([projectId])
   @@index([assigneeId])
 }
-
