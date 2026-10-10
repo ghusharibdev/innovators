@@ -2,11 +2,15 @@
 
 > Paste a client meeting transcript. AI extracts projects, tasks, owners, deadlines, and effort hours — then saves them to a role-based project management CRM.
 
-![Next.js](https://img.shields.io/badge/Next.js-15-000?logo=nextdotjs)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=fff)
+**Live app:** https://novaworks-innovators.vercel.app/
+**Demo video:** https://drive.google.com/file/d/163LlgiBz1Kjbhkm7Z0YLkHecTDC_yzA1/view?usp=drive_link
+
+![Next.js](https://img.shields.io/badge/Next.js-16-000?logo=nextdotjs)
+![React](https://img.shields.io/badge/React-19-087EA4?logo=react&logoColor=fff)
+![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=fff)
 ![Prisma](https://img.shields.io/badge/Prisma-6-2D3748?logo=prisma)
 ![Gemini](https://img.shields.io/badge/Gemini-3.1%20Flash%20Lite-8E75B2?logo=google)
-![Tailwind](https://img.shields.io/badge/Tailwind-3.4-38BDF8?logo=tailwindcss&logoColor=fff)
+![Tailwind](https://img.shields.io/badge/Tailwind-4-38BDF8?logo=tailwindcss&logoColor=fff)
 
 Built for **The Infinity Hack '26** — AI Project Manager challenge.
 
@@ -14,11 +18,13 @@ Built for **The Infinity Hack '26** — AI Project Manager challenge.
 
 ## Team
 
-- **Team name:** NovaWorks Builders
-- **Members:**
-  - **Ghusharib Najam** — Frontend / UI — Next.js pages, Tailwind + shadcn/ui components, framer-motion animations, light/dark theming (next-themes), Geist font setup, responsive polish
-  - **Meesum Zaheer** — Backend / AI — Prisma schema, SQLite/PostgreSQL, JWT auth, access control, Gemini integration, validation, transactional saves
+**NovaWorks Builders**
+
+- **Ghusharib Najam**
+- **Meesum Zaheer**
+
 - **Repository:** `https://github.com/ghusharibdev/innovators.git`
+- **Live deployment:** https://novaworks-innovators.vercel.app/
 
 ---
 
@@ -34,7 +40,7 @@ Built for **The Infinity Hack '26** — AI Project Manager challenge.
 - ✅ **Project detail** — client, manager, deadline, description, and a task table with assignee, deadline, and estimated hours.
 - ✅ **Agent "My Tasks" view** — grouped by project, sorted by deadline, with overdue and due-soon badges.
 - ✅ **Read-only team directory** — names, codes, roles, specializations, and skills.
-- ✅ **Persistent storage** — projects and tasks survive a refresh (SQLite locally, PostgreSQL when deployed).
+- ✅ **Persistent storage** — projects and tasks survive a refresh (Neon PostgreSQL in production).
 - ✅ **Idempotent seeder** — re-running never duplicates the 10 demo users.
 - ✅ **Duplicate-safe** — create button is disabled while processing, and the save is transactional.
 
@@ -46,39 +52,43 @@ Built for **The Infinity Hack '26** — AI Project Manager challenge.
 
 | Layer | Technology |
 |---|---|
-| **Frontend** | Next.js 15 (App Router) + React 18 + TypeScript 5 |
-| **Styling** | Tailwind CSS 3.4 + shadcn/ui + lucide-react |
-| **Animation** | framer-motion 11 |
+| **Frontend** | Next.js 16 (App Router) + React 19 + TypeScript 6 |
+| **Styling** | Tailwind CSS 4 + shadcn/ui + lucide-react |
+| **Animation** | motion 14 (`motion/react`) |
 | **Backend** | Next.js Route Handlers (Node runtime) |
-| **Database (dev)** | SQLite via Prisma 6 |
-| **Database (prod)** | PostgreSQL (Neon / Aiven free tier) |
+| **Database** | PostgreSQL (Neon serverless, free tier) |
 | **ORM** | Prisma 6 |
 | **AI** | Google Gemini — `gemini-3.1-flash-lite` with forced JSON response schema |
 | **Authentication** | JWT (`jose`, HS256) in an httpOnly cookie + bcryptjs password hashing |
-| **Validation** | Zod (shape) + custom semantic validator (user codes, roles, deadline rules) |
+| **Validation** | Zod 4 (shape) + custom semantic validator (user codes, roles, deadline rules) |
 | **Theme** | Light / Dark / System toggle via next-themes (persisted, no FOUC) |
-| **Fonts** | Geist Sans (UI) + JetBrains Mono (codes, hours, transcript) |
+| **Fonts** | Geist Sans (UI) + JetBrains Mono (codes, hours, transcript) — self-hosted, no Google Fonts at build time |
 
 ---
 
 ## Links
 
-- **Live application:** Local only — no public deployment yet (demo runs on `localhost:3000`)
-- **Demo video:** Record with any screen capture tool before submission
+- **Live application:** https://novaworks-innovators.vercel.app/
+- **Demo video:** https://drive.google.com/file/d/163LlgiBz1Kjbhkm7Z0YLkHecTDC_yzA1/view?usp=drive_link
+- **Source repository:** `https://github.com/ghusharibdev/innovators.git`
+
+The project is **deployed and publicly available** — it is not local-only. The live link is fully functional: the database is seeded and ready to use with the demo accounts below, so no setup is required to try it.
 
 ---
 
 ## Requirements
 
-- Node.js **20.x** or newer
+- Node.js **20.9** or newer (required by Next.js 16)
 - npm 10.x or newer
 - A **Gemini API key** from [Google AI Studio](https://aistudio.google.com/apikey)
-- No external database server needed locally — Prisma creates `prisma/dev.db` on first migration
-- *(Deployment only)* a PostgreSQL connection string from Neon or Aiven
+- A **PostgreSQL** database — the free tier at [Neon](https://neon.tech) is enough
+- No local database server needed if you point at a Neon project
+
+> **Note on SQLite:** the schema targets PostgreSQL. An earlier iteration ran on a local SQLite file, but SQLite does not persist on serverless hosts, so the provider was switched to `postgresql`. See [Running locally](#running-locally) for the current workflow.
 
 ---
 
-## Run Locally
+## Running Locally
 
 ### 1. Clone and install
 
@@ -97,12 +107,16 @@ cp .env.example .env
 Fill in `.env`:
 
 ```bash
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://user:password@ep-xxxx-pooler.region.aws.neon.tech/neondb?sslmode=require"
+DIRECT_URL="postgresql://user:password@ep-xxxx.region.aws.neon.tech/neondb?sslmode=require"
 SESSION_SECRET="<paste a 32+ character random string>"
 GEMINI_API_KEY="<your Google AI Studio key>"
 GEMINI_MODEL="gemini-3.1-flash-lite"
 NEXT_PUBLIC_APP_NAME="NovaWorks CRM"
 ```
+
+- `DATABASE_URL` → the **pooled** Neon string (hostname contains `-pooler`). Used at runtime.
+- `DIRECT_URL` → the **direct** Neon string (no `-pooler`). Used by migrations.
 
 Generate a session secret:
 
@@ -114,7 +128,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 ```bash
 npx prisma generate
-npx prisma migrate dev --name init
+npx prisma migrate deploy
 ```
 
 ### 4. Seed the 10 demo users
@@ -133,16 +147,16 @@ npm run dev
 
 Open **http://localhost:3000**.
 
-Only one process needs to stay running (`npm run dev`). The SQLite file lives at `prisma/dev.db` and needs no separate server.
-
 ### Useful scripts
 
 ```bash
 npm run dev            # start dev server
-npm run build          # production build
+npm run build          # prisma generate + production build
 npm run start          # run production build
-npm run db:seed        # seed/refresh the 10 demo users
-npm run db:studio      # Prisma Studio GUI at localhost:5555
+npm run lint           # ESLint
+npm run db:seed        # seed/refresh the 10 demo users (idempotent)
+npm run db:studio      # Prisma Studio GUI
+npm run db:reset       # drop and re-apply all migrations
 npm run db:reset-data  # wipe generated projects/tasks, keep users
 ```
 
@@ -152,7 +166,8 @@ npm run db:reset-data  # wipe generated projects/tasks, keep users
 
 | Variable | Purpose | Where configured |
 |---|---|---|
-| `DATABASE_URL` | Database connection string. `file:./dev.db` locally; Postgres URL when deployed. | Backend only |
+| `DATABASE_URL` | Pooled PostgreSQL connection string. | Backend only |
+| `DIRECT_URL` | Direct (non-pooled) PostgreSQL string used by Prisma migrations. | Backend only |
 | `SESSION_SECRET` | HMAC key for signing the auth JWT. Minimum 32 characters. | Backend only |
 | `GEMINI_API_KEY` | Google AI Studio credential used by `lib/ai.ts`. | Backend only |
 | `GEMINI_MODEL` | Model ID, e.g. `gemini-3.1-flash-lite`. | Backend only |
@@ -161,7 +176,7 @@ npm run db:reset-data  # wipe generated projects/tasks, keep users
 **Security notes**
 
 - `.env` is git-ignored. Only `.env.example` (with placeholders) is committed.
-- `GEMINI_API_KEY`, `DATABASE_URL`, and `SESSION_SECRET` are never exposed to the browser.
+- `GEMINI_API_KEY`, `DATABASE_URL`, `DIRECT_URL`, and `SESSION_SECRET` are never exposed to the browser.
 - Passwords are hashed with bcrypt and are never sent to the AI. The directory payload given to Gemini contains only `code, name, role, specialization, skills`.
 
 ---
@@ -183,19 +198,21 @@ These emails are **fictional login identifiers, not real mailboxes**. No signup,
 | Agent | Zain Abbas | `DEV05` | `zain@novaworks.example` | `Demo123!` |
 | Agent | Maryam Asif | `DEV06` | `maryam@novaworks.example` | `Demo123!` |
 
-Run `npm run db:seed` before judging. The login page also has one-click quick-login chips for Admin / Manager / Agent.
+The live database is already seeded, so you can log in immediately at https://novaworks-innovators.vercel.app/ without running anything. The login page also has one-click quick-login chips for Admin / Manager / Agent.
 
 ---
 
 ## How Judges Can Test
 
+Test on the live deployment — no setup required. A screen-recorded walkthrough is also available in the [demo video](https://drive.google.com/file/d/163LlgiBz1Kjbhkm7Z0YLkHecTDC_yzA1/view?usp=drive_link).
+
 ### A. Happy path (≈3 minutes)
 
-1. Run `npm run db:seed`, then log in as **`admin@novaworks.example` / `Demo123!`** (or click the Admin quick-login chip).
+1. Open **https://novaworks-innovators.vercel.app/** and log in as **`admin@novaworks.example` / `Demo123!`** (or click the Admin quick-login chip).
 2. Open **Create from Transcript**.
 3. Click **Load sample transcript** — this fills the textarea with the supplied NovaWorks Client Delivery Planning meeting.
 4. Click **Create from Transcript**. Watch the animated 3-step stepper: *Reading → Extracting with Gemini → Validating & saving*.
-5. **Expect:** success panel reading **3 projects · 12 tasks · 124 estimated hours**, followed by three project cards.
+5. **Expect:** success panel reading **3 projects · 12 tasks · 124 h created**, followed by three project cards.
 6. Open **UrbanCart Website** → expect manager **Ayesha Khan**, deadline **20 October 2026**, and **4 tasks**:
 
 | Task | Owner | Deadline | Hours |
@@ -210,32 +227,33 @@ Run `npm run db:seed` before judging. The login page also has one-click quick-lo
 7. Log out. Log in as **`ayesha@novaworks.example`** → she sees only UrbanCart Website.
 8. Log in as **`ali@novaworks.example`** → he sees only his 3 assigned tasks and the related UrbanCart project (no other agents' tasks).
 9. Log in as **`hamza@novaworks.example`** → he sees his 2 API tasks across two projects.
-10. **Direct-access check:** while logged in as Ali, open `/projects/<QuickServe project id>` → expect **404 / access denied**.
-11. Same via API: `curl http://localhost:3000/api/projects/<id> -H "Cookie: nw_session=..."` → `403` or `404`.
+10. **Direct-access check:** while logged in as Ali, navigate to a URL for a project he has no task in → expect a **redirect / access denied**.
+11. Same via API: `curl https://novaworks-innovators.vercel.app/api/projects/<id> -H "Cookie: nw_session=..."` → `403` or `404`.
 
 ### C. Persistence & correctness (≈1 minute)
 
-12. Refresh the dashboard → projects and tasks are still there.
+12. Refresh the dashboard → projects and tasks are still there (PostgreSQL persistence).
 13. Log back in as admin → confirm **3 projects, 12 tasks**.
 
 ### D. Genuine AI conversion (≈2 minutes)
 
-14. Reset generated data: `npm run db:reset-data`.
-15. Modify the transcript (e.g., change *"Mobile integration and testing, Usman, 10 hours, 22 October"* to *"12 hours, 23 October"*).
-16. Click **Create from Transcript** again → expect the generated task to show **12 h / 23 Oct**, while every other task stays unchanged.
+14. Modify the transcript (e.g. change *"Mobile integration and testing, Usman, 10 hours, 22 October"* to *"12 hours, 23 October"*).
+15. Click **Create from Transcript** again → expect the generated task to show **12 h / 23 Oct**, while every other task stays unchanged.
 
 ### E. Failure handling (≈1 minute)
 
-17. Paste `hello` and submit → expect a **422 validation panel listing errors**, and **zero projects saved**.
-18. Double-click Create → only one set of projects is created.
+16. Paste `hello` and submit → expect a **422 validation panel listing errors**, and **zero projects saved**.
+17. Double-click Create → only one set of projects is created.
 
 ### Resetting generated data between tests
 
+Run the reset from the repository with the production database URL:
+
 ```bash
-npm run db:reset-data
+DATABASE_URL="<neon pooled url>" DIRECT_URL="<neon direct url>" npm run db:reset-data
 ```
 
-Deletes all `Project` rows (tasks cascade) but keeps the 10 demo users.
+This deletes all generated projects and tasks but keeps the 10 demo users. There is also an admin-only `POST /api/seed/reset` endpoint that does the same thing from the deployed app.
 
 ---
 
@@ -244,7 +262,9 @@ Deletes all `Project` rows (tasks cascade) but keeps the 10 demo users.
 ```
 Browser
   │
-  ├─ Server Components  ──► lib/access.ts ──► Prisma ──► SQLite / PostgreSQL
+  ├─ proxy.ts (Edge)  ──► verifies the nw_session JWT, redirects to /login if absent/expired
+  │
+  ├─ Server Components  ──► lib/access.ts ──► Prisma ──► PostgreSQL
   │     (pages read only what the role may see)
   │
   └─ Route Handlers     ──► lib/auth.ts       (session + role guard)
@@ -258,87 +278,48 @@ Browser
 
 | File | Responsibility |
 |---|---|
+| `proxy.ts` | Edge middleware — verifies the session JWT before protected routes render |
 | `lib/access.ts` | `getVisibleProjects`, `getProjectForUser`, `getTasksForAgent` — single source of truth for permissions |
 | `lib/ai.ts` | Gemini REST call (`gemini-3.1-flash-lite`), system prompt, JSON response schema, 12 s timeout + single retry |
 | `lib/validate.ts` | Zod shape validation + semantic validation (user codes, roles, deadline rules) |
 | `app/api/transcript/route.ts` | Admin-only orchestration: extract → validate → transactional save |
 | `lib/auth.ts` | JWT create/verify, `requireUser`, `requireAdmin` |
+| `lib/seed-data.ts` | The 10 demo users and the sample meeting transcript |
 | `prisma/seed.ts` | Idempotent seeding of the 10 demo accounts |
 
 Permissions are enforced inside `lib/access.ts` and every API route — hiding a button is a convenience, not the security boundary.
 
 ---
 
-## Deployment Details
+## Deployment
 
-- Deployment status: Live on Vercel (frontend + API) with a Neon PostgreSQL database.
-- Frontend host: Vercel — Next.js 15 App Router, serverless functions.
-- Backend host: Vercel serverless functions (same project, single origin).
-- Database: Neon — serverless PostgreSQL, free tier.
-- Deployed branch: main.
+- **Live URL:** https://novaworks-innovators.vercel.app/ (public, no login needed to reach the login page)
+- **Demo video:** https://drive.google.com/file/d/163LlgiBz1Kjbhkm7Z0YLkHecTDC_yzA1/view?usp=drive_link
+- Frontend + backend: Vercel (Next.js 16 App Router, serverless functions, single origin)
+- Database: Neon — serverless PostgreSQL, free tier
+- Deployed branch: `main`
 
-### How we deployed
+### Environment variables on Vercel
 
-1. Provision PostgreSQL on Neon
-   - Created a free project at https://neon.tech.
-   - Copied both connection strings from the dashboard:
-     - Pooled (has -pooler in the hostname) → set as DATABASE_URL.
-     - Direct (no -pooler) → set as DIRECT_URL.
+Set in **Settings → Environment Variables**:
 
-2. Schema provider
-   - prisma/schema.prisma uses provider = "postgresql" with both url and
-     directUrl set. Migrations run against DIRECT_URL; the app runtime uses the
-     pooled DATABASE_URL.
+- `DATABASE_URL` — Neon pooled connection string
+- `DIRECT_URL` — Neon direct connection string
+- `SESSION_SECRET` — 64-character hex secret
+- `GEMINI_API_KEY` — Google AI Studio key
+- `GEMINI_MODEL` — `gemini-3.1-flash-lite`
+- `NEXT_PUBLIC_APP_NAME` — NovaWorks CRM
 
-3. Build script
-   - package.json includes "vercel-build": "prisma generate && prisma migrate deploy && next build".
-   - "postinstall": "prisma generate" ensures the client is always generated.
-   - On every deploy, Vercel applies new migrations automatically before building.
+### How the deploy works
 
-4. Import into Vercel
-   - Imported the GitHub repository into Vercel.
-   - Framework preset: Next.js (no custom build command needed — vercel-build is picked up automatically).
-   - Added these environment variables in Settings → Environment Variables:
-     - DATABASE_URL — Neon pooled connection string
-     - DIRECT_URL — Neon direct connection string
-     - SESSION_SECRET — 64-character hex secret
-     - GEMINI_API_KEY — Google AI Studio key
-     - GEMINI_MODEL — gemini-3.1-flash-lite
-     - NEXT_PUBLIC_APP_NAME — NovaWorks CRM
-
-5. Deploy
-   - Clicked Deploy. Vercel ran prisma generate, then prisma migrate deploy
-     (created all tables), then next build. First deploy took about 2 minutes.
-
-6. Seed the production database
-   - From the local repository, ran the seed against the production database using
-     the same Neon URL:
-     DATABASE_URL="<neon pooled url>" DIRECT_URL="<neon direct url>" npm run db:seed
-   - Alternatively, while logged in as admin on the live site, POST /api/seed
-     can be used for the first-run bootstrap (it is admin-only once users exist).
-
-7. Verification
-   - Opened the live Vercel URL.
-   - Logged in as admin@novaworks.example / Demo123!.
-   - Ran Create from Transcript → confirmed 3 projects / 12 tasks / 124 hours.
-   - Logged in as a manager and an agent to confirm role scoping.
-   - Refreshed the dashboard to confirm PostgreSQL persistence.
-
-### Environment matrix
-
-Environment         Provider   DATABASE_URL          DIRECT_URL
-Local development   SQLite     file:./dev.db         file:./dev.db
-Production (Vercel) Neon       pooled Postgres URL   direct Postgres URL
+- `package.json` defines `"vercel-build": "prisma generate && prisma migrate deploy && next build"`, so Vercel applies migrations against `DIRECT_URL` before every production build.
+- `"postinstall": "prisma generate"` ensures the client is always generated.
+- The framework preset is Next.js — `vercel-build` is picked up automatically, no custom build command needed.
+- The database is seeded via `npm run db:seed` against the production Neon URL. There is also an admin-only `POST /api/seed` bootstrap endpoint that seeds a fresh deployment; once any user exists it requires an admin session.
 
 ### Notes
 
-- SQLite is not supported on Vercel or any serverless host (ephemeral filesystem).
-  Neon PostgreSQL is required for a working live link.
-- The local SQLite setup is fully preserved: to run locally, set DATABASE_URL="file:./dev.db"
-  and DIRECT_URL="file:./dev.db" in .env, then run
-  npx prisma db push && npm run db:seed && npm run dev.
-  The old SQLite migration is intentionally removed — for local SQLite development,
-  use npx prisma db push to sync the schema instead of migrations.
+- SQLite does not work on Vercel or any serverless host (ephemeral filesystem). PostgreSQL is required for a working live link — this is why the schema provider is `postgresql`.
 
 ---
 
@@ -349,16 +330,17 @@ Production (Vercel) Neon       pooled Postgres URL   direct Postgres URL
 - Free Gemini tiers are rate-limited; a 429 surfaces as a clear retry message rather than a partial save.
 - No pagination — the UI is designed for demo-scale datasets.
 - Signup, email verification, password reset, and user management are intentionally absent (out of scope).
-- If `GEMINI_MODEL` is unavailable in your region, switch to another flash model (e.g. `gemini-3.5-flash-lite`) or route through OpenRouter.
+- If `GEMINI_MODEL` is unavailable in your region, switch to another flash model via the `GEMINI_MODEL` env var.
 
 ---
 
 ## Submission Summary
 
 - **Source repository:** `https://github.com/ghusharibdev/innovators.git`
-- **Live link or local demo video:** Local demo on `http://localhost:3000`
-- **Setup and seed commands:** `npm install` → `npx prisma migrate dev --name init` → `npm run db:seed` → `npm run dev`
-- **Demo login accounts:** confirmed working — `admin@novaworks.example` / `Demo123!` (all 10 accounts use `Demo123!`)
+- **Live link:** https://novaworks-innovators.vercel.app/ (deployed and publicly available)
+- **Demo video:** https://drive.google.com/file/d/163LlgiBz1Kjbhkm7Z0YLkHecTDC_yzA1/view?usp=drive_link
+- **Setup and seed commands:** `npm install` → `npm run db:seed` → `npm run dev`
+- **Demo login accounts:** `admin@novaworks.example` / `Demo123!` (all 10 accounts use `Demo123!`)
 
 ### Features completed
 
@@ -369,5 +351,5 @@ Production (Vercel) Neon       pooled Postgres URL   direct Postgres URL
 - Project detail with full task breakdown (owner, deadline, estimated hours)
 - Agent "My Tasks" view across projects
 - Read-only team directory
-- Persistent SQLite / PostgreSQL storage
+- Persistent PostgreSQL storage on Vercel + Neon
 - Modern, animated, minimal UI with light/dark theme (Geist Sans, semantic color tokens, hover micro-interactions, fully responsive mobile → desktop)
