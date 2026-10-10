@@ -1,4 +1,4 @@
-import type { Transition, Variants } from "framer-motion";
+import type { Transition, Variants } from "motion/react";
 
 /** Shared easing curve — DESIGN.md §12.2. */
 export const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];

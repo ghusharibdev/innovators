@@ -1,6 +1,12 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Tailwind v4 does not auto-load a JS config. This keeps the existing design
+   tokens (colors, borderRadius, fontFamily, boxShadow, keyframes) identical. */
+@config "../tailwind.config.ts";
+
+/* v4 replacement for darkMode: ["class"] */
+@custom-variant dark (&:is(.dark, .dark *));
 
 /* ─────────────────────────────────────────────────────────────
    Dual-theme tokens — light is the :root default, dark under .dark.

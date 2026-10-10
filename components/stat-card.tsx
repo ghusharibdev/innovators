@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { animate, motion, useReducedMotion } from "framer-motion";
+import { animate, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { EASE, staggerItem } from "@/lib/motion";
 

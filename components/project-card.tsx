@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "motion/react";
 import { ArrowUpRight, Clock3, ListChecks, UserRound } from "lucide-react";
 import { DeadlineBadge } from "@/components/deadline-badge";
 import { hoverLift, EASE } from "@/lib/motion";

@@ -14,7 +14,7 @@ function redirectToLogin(request: NextRequest): NextResponse {
   return response;
 }
 
-export async function middleware(request: NextRequest): Promise<NextResponse> {
+export async function proxy(request: NextRequest): Promise<NextResponse> {
   const token = request.cookies.get(SESSION_COOKIE)?.value;
   if (!token) return redirectToLogin(request);
 

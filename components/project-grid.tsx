@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { FolderKanban } from "lucide-react";
 import { ProjectCard, type ProjectCardData } from "@/components/project-card";
 import { EmptyState } from "@/components/empty-state";

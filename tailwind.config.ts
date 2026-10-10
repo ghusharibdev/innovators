@@ -1,12 +1,9 @@
 import type { Config } from "tailwindcss";
 
+// Tailwind v4 is CSS-first: `content` is auto-detected and `darkMode: "class"`
+// is declared via @custom-variant in app/globals.css. This file is loaded
+// through the `@config` directive there and only carries design tokens.
 const config: Config = {
-  darkMode: ["class"],
-  content: [
-    "./app/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./lib/**/*.{ts,tsx}",
-  ],
   theme: {
     container: {
       center: true,
@@ -109,7 +106,6 @@ const config: Config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
 };
 
 export default config;
